@@ -1,0 +1,9 @@
+type URL {
+  count: Int!
+  original: String!
+  short: String! @unique
+}
+
+type Query {
+  findURLbyShort(short: String!): URL
+}
