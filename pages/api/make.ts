@@ -1,6 +1,11 @@
-import makeShortUrlId from 'lib/makeShortUrl'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default async function handler (req, res) {
+import makeShortUrlId from '../../lib/makeShortUrl'
+
+export default async function handler (
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const {
     body: {
       original,
@@ -19,10 +24,10 @@ export default async function handler (req, res) {
     const response = await makeShortUrlId(original, short)
 
     if (response.ok) {
-      res.status(200).json({ message: response.message })
+      res.status(response.statusCode).json({ message: response.message })
       return
     } else {
-      res.status(response.error.requestResult.statusCode).json({ error: response.error })
+      res.status(response.statusCode).json({ error: response.error })
       return
     }
   } catch (error) {

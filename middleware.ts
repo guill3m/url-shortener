@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware (req) {
+export function middleware (req: NextRequest) {
   const { headers, nextUrl } = req
 
   if (nextUrl.pathname === '/' || nextUrl.pathname.startsWith('/api')) {

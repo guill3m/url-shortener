@@ -1,11 +1,12 @@
+import { InferGetServerSidePropsType } from 'next'
 import React, { useEffect } from 'react'
-
-import getOriginalUrl from 'lib/getOriginalUrl'
 import { useRouter } from 'next/router'
+
+import getOriginalUrl from '../lib/getOriginalUrl'
 
 export default function Redirect ({
   originalUrl,
-}) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Redirect ({
   )
 }
 
-export async function getServerSideProps ({ params: { url } }) {
+export async function getServerSideProps ({ params: { url } }: { params: { url: string }}) {
   try {
     const originalUrl = await getOriginalUrl(url)
     return {
@@ -29,7 +30,7 @@ export async function getServerSideProps ({ params: { url } }) {
         originalUrl,
       },
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.description === 'Set not found.') {
       return {
         notFound: true,

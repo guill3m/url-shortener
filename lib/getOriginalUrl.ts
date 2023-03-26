@@ -1,9 +1,15 @@
 import { query as q } from 'faunadb'
 
-import client from 'lib/faunaClient'
+import client from './faunaClient'
 
-export default async function getOrignalUrl (shortUrl) {
-  const retrieveUrlResponse = await client.query(
+export default async function getOrignalUrl (shortUrl: string): Promise<string> {
+  const retrieveUrlResponse: {
+    ref: string,
+    data: {
+      count: number,
+      original: string,
+    }
+  } = await client.query(
     q.Get(
       q.Match(q.Index('findURLbyShort'), shortUrl)
     )

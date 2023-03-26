@@ -1,8 +1,8 @@
 import { query as q } from 'faunadb'
 
-import client from 'lib/faunaClient'
+import client from './faunaClient'
 
-function generateShortUrlId () {
+function generateShortUrlId (): string {
   const availableCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789'.split('')
   const length = 6
 
@@ -14,11 +14,22 @@ function generateShortUrlId () {
   return shortId
 }
 
-async function makeShortUrlId (originalUrl, shortUrl = null) {
+export default async function makeShortUrlId (originalUrl: string, shortUrl: string|null = null): Promise<{
+  error?: Error,
+  message?: string,
+  ok: boolean,
+  statusCode: number,
+}> {
   const shortUrlId = shortUrl ?? generateShortUrlId()
 
   try {
-    const make = await client.query(
+    const make: {
+      data: {
+        count: number,
+        original: string,
+        short: string
+      }
+    } = await client.query(
       q.Create(
         q.Collection('URL'),
         {
@@ -32,15 +43,15 @@ async function makeShortUrlId (originalUrl, shortUrl = null) {
     )
 
     return {
+      message: `Generated new short url id for "${make.data.original}" as "${make.data.short}"`,
       ok: true,
-      message: `Generated new short url id for "${originalUrl}" as "${make.data.short}"`,
+      statusCode: 201,
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
-      ok: false,
       error,
+      ok: false,
+      statusCode: error.requestResult.statusCode,
     }
   }
 }
-
-export default makeShortUrlId
